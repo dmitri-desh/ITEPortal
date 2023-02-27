@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ITEPortal.Data.Repositories.Implementation;
+using ITEPortal.Data.Repositories.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ITEPortal.Data
 {
@@ -11,7 +8,9 @@ namespace ITEPortal.Data
     {
         public static void RegisterRepository(IServiceCollection services)
         {
-            //services.AddScoped(typeof(IApplicantRepository), typeof(ApplicantRepository));
+            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            services.AddScoped(typeof(IUserRoleRepository), typeof(UserRoleRepository));
+            services.AddScoped(typeof(IAuthCodeRepository), typeof(AuthCodeRepository));
         }
     }
 }

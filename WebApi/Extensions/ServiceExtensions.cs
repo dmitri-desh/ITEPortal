@@ -1,4 +1,5 @@
-﻿using MessengerService;
+﻿using ITEPortal.Data;
+using MessengerService;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Extensions
@@ -15,16 +16,20 @@ namespace WebApi.Extensions
                     .AllowAnyHeader());
             });
         }
-        public static void ConfigureIISIntegration(this IServiceCollection services)
-        {
-            services.Configure<IISOptions>(options =>
-            {
+        //public static void ConfigureIISIntegration(this IServiceCollection services)
+        //{
+        //    services.Configure<IISOptions>(options =>
+        //    {
 
-            });
-        }
+        //    });
+        //}
         public static void ConfigureMessengerService(this IServiceCollection services)
         {
             services.AddSingleton<IEmailManager, EmailManager>();
+        }
+        public static void ConfigureDataAccessRegistry(this IServiceCollection services)
+        {
+            DataAccessRegistry.RegisterRepository(services);
         }
     }
 }

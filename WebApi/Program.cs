@@ -16,10 +16,10 @@ public class Program
 
         // Add services to the container.
         builder.Services.ConfigureCors();
-        builder.Services.ConfigureIISIntegration();
+        //builder.Services.ConfigureIISIntegration();
         builder.Services.ConfigureMessengerService();
 
-        
+        builder.Services.ConfigureDataAccessRegistry();
 
         builder.Services.AddControllers();
 

@@ -1,6 +1,6 @@
 ﻿using MessengerService;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.ViewModels;
+using WebApi.ViewModels.Login;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
             };
             var message = new EmailMessage
             {
-                Body = userEmail.EmailValue,
+                Body = userEmail.Value,
                 Subject = "Test",
                 FromEmail = "mail@testmail.com",
                 ToEmail = "d.deshko@itransition.com" //userEmail.EmailValue
@@ -59,7 +59,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public void SubmitCode([FromBody] AuthCode code)
         {
-            _logger.LogInformation($"Code {code.Code} has been submitted.");
+            _logger.LogInformation($"Code {code.Value} has been submitted.");
         }
 
         // PUT api/<LoginController>/5

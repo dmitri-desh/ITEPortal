@@ -1,25 +1,21 @@
 ﻿using ITEPortal.Data.Models;
+using ITEPortal.Data.Persistence;
 using ITEPortal.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITEPortal.Data.Repositories.Implementation
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        //protected readonly ApplicationContext context;
+        protected readonly ApplicationContext _context;
         private readonly DbSet<T> entities;
 
-        //public Repository(ApplicationContext context)
-        //{
-        //    this.context = context;
-        //    this.context.Database.EnsureCreated();
-        //    entities = context.Set<T>();
-        //}
+        public Repository(ApplicationContext context)
+        {
+            _context = context;
+            _context.Database.EnsureCreated();
+            entities = context.Set<T>();
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
@@ -33,21 +29,21 @@ namespace ITEPortal.Data.Repositories.Implementation
 
         public async Task<T> InsertAsync(T entity)
         {
-            //await context.Set<T>().AddAsync(entity);
-            //await context.SaveChangesAsync();
+            await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
         public async Task UpdateAsync(T entity)
         {
-            //context.Entry(entity).State = EntityState.Modified;
-            //await context.SaveChangesAsync();
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T entity)
         {
-            //context.Set<T>().Remove(entity);
-            //await context.SaveChangesAsync();
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }
