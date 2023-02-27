@@ -9,6 +9,7 @@ namespace ITEPortal.Domain
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IUserService), typeof(UserService));
+            services.AddScoped(typeof(IAuthCodeService), typeof(AuthCodeService));
         }
     }
 }

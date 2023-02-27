@@ -32,6 +32,7 @@ namespace WebApi.Extensions
         public static void ConfigureValidatorService(this IServiceCollection services)
         {
             services.AddScoped<IValidator<UserDto>, UserValidator>();
+            services.AddScoped<IValidator<AuthCodeDto>, AuthCodeValidator>();
         }
     }
 }

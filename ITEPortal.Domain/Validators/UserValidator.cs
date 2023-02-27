@@ -9,7 +9,7 @@ namespace ITEPortal.Domain.Validators
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email address is required")
-                .EmailAddress().WithMessage("Your Email address is not valid"); ;
+                .EmailAddress().WithMessage("Your Email address is not valid");
         }
     }
 }
