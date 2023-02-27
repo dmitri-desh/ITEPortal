@@ -1,6 +1,9 @@
-﻿using ITEPortal.Data;
+﻿using FluentValidation;
+using ITEPortal.Data;
+using ITEPortal.Domain;
+using ITEPortal.Domain.Dto;
+using ITEPortal.Domain.Validators;
 using MessengerService;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Extensions
 {
@@ -16,13 +19,6 @@ namespace WebApi.Extensions
                     .AllowAnyHeader());
             });
         }
-        //public static void ConfigureIISIntegration(this IServiceCollection services)
-        //{
-        //    services.Configure<IISOptions>(options =>
-        //    {
-
-        //    });
-        //}
         public static void ConfigureMessengerService(this IServiceCollection services)
         {
             services.AddSingleton<IEmailManager, EmailManager>();
@@ -30,6 +26,12 @@ namespace WebApi.Extensions
         public static void ConfigureDataAccessRegistry(this IServiceCollection services)
         {
             DataAccessRegistry.RegisterRepository(services);
+            ComponentAccessRegistry.RegisterServices(services);
+            AutomapperRegistry.RegisterServices(services);
+        }
+        public static void ConfigureValidatorService(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<UserDto>, UserValidator>();
         }
     }
 }
