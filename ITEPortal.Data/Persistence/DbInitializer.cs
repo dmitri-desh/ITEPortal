@@ -1,6 +1,6 @@
-﻿using WebApi.Entities;
+﻿using ITEPortal.Data.Models;
 
-namespace WebApi.Persistence
+namespace ITEPortal.Data.Persistence
 {
     public class DbInitializer
     {
@@ -8,7 +8,7 @@ namespace WebApi.Persistence
         {
             context.Database.EnsureCreated();
 
-            // Look for any students.
+            // Look for any roles.
             if (context.UserRoles.Any())
             {
                 return;   // DB has been seeded
@@ -31,4 +31,3 @@ namespace WebApi.Persistence
         }
     }
 }
-

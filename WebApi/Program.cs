@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Extensions;
-using WebApi.Persistence;
+using ITEPortal.Data.Persistence;
 
 public class Program
 {

@@ -1,8 +1,7 @@
-﻿namespace WebApi.Entities
+﻿namespace ITEPortal.Data.Models
 {
-    public class UserRole
+    public class UserRole : BaseEntity
     {
-        public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool GlobalSettingsAllowed { get; set; } = false;
 
