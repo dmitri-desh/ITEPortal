@@ -90,6 +90,14 @@ namespace ITEPortal.Domain.Services.Implementation
             }
         }
 
+        public async Task<User>? GetByEmailAsync(string email)
+        {
+                var users = await _userRepository.GetAllAsync();
+                var user = users?.FirstOrDefault(user => user.Email.Equals(email, StringComparison.InvariantCulture));
+
+                return user;
+        }
+
         public async Task<ResponseDto> UpdateUserAsync(UserDto userDto)
         {
             try

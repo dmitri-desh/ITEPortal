@@ -23,21 +23,20 @@ namespace ITEPortal.Domain.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<ResponseDto> AddAuthCodeAsync(AuthCodeDto authCodeDto)
+        public async Task<AuthCode> AddAuthCodeAsync(AuthCodeDto authCodeDto)
         {
             try
             {
+                var generatedCode = await GenerateCodeAsync();
+                authCodeDto.CodeNumber = generatedCode;
+                //authCodeDto.ExpiredDate = DateTime.Now.AddHours(1);
 
                 var authCode = await _authCodeRepository.InsertAsync(_mapper.Map<AuthCode>(authCodeDto));
-                return new ResponseDto()
-                {
-                    Success = true,
-                    Data = _mapper.Map<UserDto>(authCode)
-                };
+                return authCode;
             }
             catch (Exception e)
             {
-                return Helper.GetErrorDto(e);
+                return null; 
             }
         }
 
@@ -58,23 +57,11 @@ namespace ITEPortal.Domain.Services.Implementation
             }
         }
 
-        public async Task<ResponseDto> GetAllAsync()
+        public async Task<IEnumerable<AuthCode>> GetAllAsync()
         {
-            try
-            {
-                var authCodes = await _authCodeRepository.GetAllAsync();
-                var authCodesDto = authCodes.Select(authCode => _mapper.Map<AuthCodeDto>(authCode)).ToList();
-
-                return new ResponseDto()
-                {
-                    Success = true,
-                    Data = authCodesDto
-                };
-            }
-            catch (Exception e)
-            {
-                return Helper.GetErrorDto(e);
-            }
+            var authCodes = await _authCodeRepository.GetAllAsync();
+            
+            return authCodes.ToList();
         }
 
         public async Task<ResponseDto> GetByIdAsync(long authCodeId)
@@ -96,6 +83,14 @@ namespace ITEPortal.Domain.Services.Implementation
             }
         }
 
+        public async Task<AuthCode> GetLastByUserIdAsync(long userId)
+        {
+            var authCodes = await GetAllAsync();
+            var authCode = authCodes.OrderByDescending(code => code.Id).FirstOrDefault(x => x.User.Id == userId);
+
+            return authCode;
+        }
+
         public async Task<ResponseDto> UpdateAuthCodeAsync(AuthCodeDto authCodeDto)
         {
             try
@@ -112,6 +107,12 @@ namespace ITEPortal.Domain.Services.Implementation
             {
                 return Helper.GetErrorDto(e);
             }
+        }
+
+        private async static Task<string> GenerateCodeAsync()
+        {
+            var code = await Nanoid.Nanoid.GenerateAsync("1234567890", 4);
+            return code;
         }
     }
 }

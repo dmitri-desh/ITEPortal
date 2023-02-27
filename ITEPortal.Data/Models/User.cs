@@ -7,7 +7,8 @@
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public DateTime? DeletedDate { get; set; }
-
+     
+        public UserRole Role { get; set; }
         public ICollection<AuthCode> AuthCodes { get; set; } = new List<AuthCode>();
     }
 }

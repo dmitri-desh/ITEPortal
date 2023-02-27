@@ -5,5 +5,7 @@
         public long Id { get; set; }
         public string CodeNumber { get; set; } = string.Empty;
         public DateTime ExpiredDate { get; set; }
+
+        public long UserId { get; set; }
     }
 }

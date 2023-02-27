@@ -1,17 +1,20 @@
-﻿using ITEPortal.Domain.Dto;
+﻿using ITEPortal.Data.Models;
+using ITEPortal.Domain.Dto;
 
 namespace ITEPortal.Domain.Services.Interfaces
 {
     public interface IAuthCodeService
     {
-        Task<ResponseDto> AddAuthCodeAsync(AuthCodeDto authCodeDto);
+        Task<AuthCode> AddAuthCodeAsync(AuthCodeDto authCodeDto);
 
         Task<ResponseDto> UpdateAuthCodeAsync(AuthCodeDto authCodeDto);
 
         Task<ResponseDto> GetByIdAsync(long authCodeId);
 
-        Task<ResponseDto> GetAllAsync();
+        Task<IEnumerable<AuthCode>> GetAllAsync();
 
         Task<ResponseDto> DeleteAuthCodeAsync(AuthCodeDto authCodeDto);
+
+        Task<AuthCode> GetLastByUserIdAsync(long userId);
     }
 }

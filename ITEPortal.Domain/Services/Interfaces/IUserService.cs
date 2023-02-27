@@ -1,4 +1,5 @@
-﻿using ITEPortal.Domain.Dto;
+﻿using ITEPortal.Data.Models;
+using ITEPortal.Domain.Dto;
 
 namespace ITEPortal.Domain.Services.Interfaces
 {
@@ -13,5 +14,7 @@ namespace ITEPortal.Domain.Services.Interfaces
         Task<ResponseDto> GetAllAsync();
 
         Task<ResponseDto> DeleteUserAsync(UserDto userDto);
+
+        Task<User>? GetByEmailAsync(string email);
     }
 }
