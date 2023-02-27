@@ -10,6 +10,7 @@ namespace ITEPortal.Domain
         {
             services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(IAuthCodeService), typeof(AuthCodeService));
+            services.AddScoped(typeof(IUserRoleService), typeof(UserRoleService));
         }
     }
 }
