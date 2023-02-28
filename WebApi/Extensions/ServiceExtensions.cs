@@ -2,6 +2,8 @@
 using ITEPortal.Data;
 using ITEPortal.Domain;
 using ITEPortal.Domain.Dto;
+using ITEPortal.Domain.Services.Implementation;
+using ITEPortal.Domain.Services.Interfaces;
 using ITEPortal.Domain.Validators;
 using MessengerService;
 
@@ -34,6 +36,10 @@ namespace WebApi.Extensions
             services.AddScoped<IValidator<UserDto>, UserValidator>();
             services.AddScoped<IValidator<AuthCodeDto>, AuthCodeValidator>();
             services.AddScoped<IValidator<UserRoleDto>, UserRoleValidator>();
+        }
+        public static void ConfigureJwtService(this IServiceCollection services)
+        {
+            services.AddSingleton<IJwtService, JwtService>();
         }
     }
 }

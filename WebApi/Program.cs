@@ -21,6 +21,7 @@ public class Program
         builder.Services.ConfigureValidatorService();
 
         builder.Services.ConfigureDataAccessRegistry();
+        builder.Services.ConfigureJwtService();
 
         builder.Services.AddControllers();
 

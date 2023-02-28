@@ -10,7 +10,6 @@ namespace ITEPortal.Domain.Mapping
         {
             CreateMap<AuthCode, AuthCodeDto>();
             CreateMap<AuthCodeDto, AuthCode>()
-                .ForMember(dest => dest.User.Id, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
         }
     }

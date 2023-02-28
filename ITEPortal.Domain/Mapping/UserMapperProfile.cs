@@ -10,7 +10,6 @@ namespace ITEPortal.Domain.Mapping
         {
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>()
-                .ForMember(dest => dest.Role.Id, opt => opt.MapFrom(src => src.UserRoleId))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
         }
     }
