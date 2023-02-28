@@ -4,6 +4,7 @@ using ITEPortal.Domain.Models;
 using ITEPortal.Domain.Services.Implementation;
 using ITEPortal.Domain.Services.Interfaces;
 using MessengerService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.ViewModels.Auth;
 using WebApi.ViewModels.Login;
@@ -12,6 +13,7 @@ using WebApi.ViewModels.Login;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [Route("auth")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -40,6 +42,7 @@ namespace WebApi.Controllers
         }
 
         // POST auth/email
+        [AllowAnonymous]
         [Route("email")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -83,6 +86,7 @@ namespace WebApi.Controllers
         }
 
         // POST auth/token
+        [AllowAnonymous]
         [Route("token")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -117,6 +121,45 @@ namespace WebApi.Controllers
             };
 
             _logger.LogInformation($"Code {code.Code} has been verified. Token has been granted for {code.Email}.");
+
+            return Ok(result);
+        }
+
+        // GET auth/refresh-token
+        [Route("refresh-token")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RefreshToken([FromBody] AuthCode code)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userService.GetByEmailAsync(code.Email);
+            if (user == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var authCode = await _authCodeService.GetLastByUserIdAsync(user.Id);
+            if (authCode == null || !authCode.CodeNumber.Equals(code.Code, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var token = await _tokenClaimsService.GetTokenAsync(code.Email);
+
+            var result = new AuthenticateResultModel
+            {
+                AccessToken = token.AccessToken,
+                ExpiresUTC = token.ExpiresUTC.Value,
+            };
+
+            _logger.LogInformation($"Token has been refreshed.");
 
             return Ok(result);
         }

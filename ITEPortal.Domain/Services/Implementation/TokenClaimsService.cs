@@ -1,7 +1,6 @@
 ﻿using ITEPortal.Domain.Configuration;
 using ITEPortal.Domain.Models;
 using ITEPortal.Domain.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

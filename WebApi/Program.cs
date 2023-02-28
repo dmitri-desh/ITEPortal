@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Extensions;
 using ITEPortal.Data.Persistence;
 using ITEPortal.Domain.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 public class Program
 {
@@ -12,6 +15,28 @@ public class Program
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionForPostgres");
         var jwtSettings = builder.Configuration.GetSection(nameof(JwtSettings));
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(o =>
+        {
+            o.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey
+                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true
+            };
+        });
+
+        builder.Services.AddAuthorization();
 
         builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
 
@@ -59,9 +84,12 @@ public class Program
 
         app.UseCors("CorsPolicy");
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.MapGet("/auth/email", () => "Log in...").RequireAuthorization();
 
         app.Run();
     }

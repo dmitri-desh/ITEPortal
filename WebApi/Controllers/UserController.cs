@@ -1,10 +1,12 @@
 ﻿using ITEPortal.Domain.Dto;
 using ITEPortal.Domain.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [Route("user")]
     [ApiController]
     public class UserController : ControllerBase
