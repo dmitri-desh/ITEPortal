@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Extensions;
 using ITEPortal.Data.Persistence;
+using ITEPortal.Domain.Configuration;
 
 public class Program
 {
@@ -10,7 +11,11 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionForPostgres");
+        var jwtSettings = builder.Configuration.GetSection(nameof(JwtSettings));
+
         builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
+
+        builder.Services.Configure<JwtSettings>(jwtSettings);
 
         CreateDbIfNotExists(builder);
 

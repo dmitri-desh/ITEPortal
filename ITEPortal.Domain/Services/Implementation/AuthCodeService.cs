@@ -29,7 +29,7 @@ namespace ITEPortal.Domain.Services.Implementation
             {
                 var generatedCode = await GenerateCodeAsync();
                 authCodeDto.CodeNumber = generatedCode;
-                //authCodeDto.ExpiredDate = DateTime.Now.AddHours(1);
+                authCodeDto.ExpiredDate = DateTime.UtcNow.AddHours(1);
 
                 var authCode = await _authCodeRepository.InsertAsync(_mapper.Map<AuthCode>(authCodeDto));
                 return authCode;
@@ -86,7 +86,7 @@ namespace ITEPortal.Domain.Services.Implementation
         public async Task<AuthCode> GetLastByUserIdAsync(long userId)
         {
             var authCodes = await GetAllAsync();
-            var authCode = authCodes.OrderByDescending(code => code.Id).FirstOrDefault(x => x.User.Id == userId);
+            var authCode = authCodes.OrderByDescending(code => code.ExpiredDate).FirstOrDefault(x => x.User.Id == userId);
 
             return authCode;
         }

@@ -30,7 +30,14 @@ namespace ITEPortal.Data.Repositories.Implementation
         public async Task<T> InsertAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+
+            }
             return entity;
         }
 

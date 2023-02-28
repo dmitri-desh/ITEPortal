@@ -1,5 +1,7 @@
 ﻿using ITEPortal.Domain;
 using ITEPortal.Domain.Dto;
+using ITEPortal.Domain.Models;
+using ITEPortal.Domain.Services.Implementation;
 using ITEPortal.Domain.Services.Interfaces;
 using MessengerService;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +20,23 @@ namespace WebApi.Controllers
         private readonly IEmailManager _emailManager;
         private readonly IUserService _userService;
         private readonly IAuthCodeService _authCodeService;
+        private readonly IJwtService _jwtService;
+        private readonly ITokenClaimsService _tokenClaimsService;
 
         public AuthController(
             IEmailManager emailManager,
             IUserService userService,
             IAuthCodeService authCodeService,
+            IJwtService jwtService,
+            ITokenClaimsService tokenClaimsService,
             ILogger<AuthController> logger)
         {
             _logger = logger;
             _emailManager = emailManager;
             _userService = userService;
             _authCodeService = authCodeService;
+            _jwtService = jwtService;
+            _tokenClaimsService = tokenClaimsService;
         }
 
         // POST auth/email
@@ -62,7 +70,7 @@ namespace WebApi.Controllers
             };
             var message = new EmailMessage
             {
-                Body = authCode.CodeNumber,
+                Body = authCode?.CodeNumber,
                 Subject = "Verification code",
                 FromEmail = "mail@testmail.com",
                 ToEmail = email.Email
@@ -71,12 +79,16 @@ namespace WebApi.Controllers
             _emailManager.SendMessage(networkSettings, message);
             _logger.LogInformation($"Message from {message.FromEmail} to {message.ToEmail}. Subject is \"{message.Subject}\". Body is \"{message.Body}\"");
 
-            return GetResponse(StatusCodes.Status200OK, new ResponseDto { Data = authCodeDto });
+            return Ok();
         }
 
         // POST auth/token
         [Route("token")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetToken([FromBody] AuthCode code)
         {
             if (!ModelState.IsValid)
@@ -95,22 +107,18 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var token = Helper.GetToken(code.Email);
-            _logger.LogInformation($"Code {code.Code} has been verified for {code.Email}.");
+            
+            var token = await _tokenClaimsService.GetTokenAsync(code.Email);
 
-            return Ok(token);
-        }
+            var result = new AuthenticateResultModel
+            {
+                AccessToken = token.AccessToken,
+                ExpiresUTC = token.ExpiresUTC.Value,
+            };
 
-        private IActionResult GetResponse(int successStatus, ResponseDto responseData)
-        {
-            if (responseData.Success)
-            {
-                return StatusCode(successStatus, responseData);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-            }
+            _logger.LogInformation($"Code {code.Code} has been verified. Token has been granted for {code.Email}.");
+
+            return Ok(result);
         }
     }
 }

@@ -95,6 +95,18 @@ namespace ITEPortal.Domain.Services.Implementation
             }
         }
 
+        public async Task<UserRole> GetRoleByIdAsync(long userRoleId)
+        {
+            try
+            {
+                return await _userRoleRepository.GetByIdAsync(userRoleId);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
         public async Task<ResponseDto> UpdateUserRoleAsync(UserRoleDto userRoleDto)
         {
             try

@@ -40,6 +40,7 @@ namespace WebApi.Extensions
         public static void ConfigureJwtService(this IServiceCollection services)
         {
             services.AddSingleton<IJwtService, JwtService>();
+            services.AddScoped<ITokenClaimsService, TokenClaimsService>();
         }
     }
 }
