@@ -125,40 +125,31 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        // GET auth/refresh-token
+        // POST auth/refresh-token
         [Route("refresh-token")]
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RefreshToken([FromBody] AuthCode code)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshToken token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = await _userService.GetByEmailAsync(code.Email);
-            if (user == null)
+            var refreshToken = await _tokenClaimsService.RefreshTokenAsync(token.Token);
+            if (refreshToken == null)
             {
                 return BadRequest(ModelState);
             }
-
-            var authCode = await _authCodeService.GetLastByUserIdAsync(user.Id);
-            if (authCode == null || !authCode.CodeNumber.Equals(code.Code, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return BadRequest(ModelState);
-            }
-
-            var token = await _tokenClaimsService.GetTokenAsync(code.Email);
 
             var result = new AuthenticateResultModel
             {
-                AccessToken = token.AccessToken,
-                ExpiresUTC = token.ExpiresUTC.Value,
+                AccessToken = refreshToken.AccessToken,
+                ExpiresUTC = refreshToken.ExpiresUTC.Value,
             };
-
             _logger.LogInformation($"Token has been refreshed.");
 
             return Ok(result);

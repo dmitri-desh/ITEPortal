@@ -1,6 +1,7 @@
 ﻿using ITEPortal.Domain.Configuration;
 using ITEPortal.Domain.Models;
 using ITEPortal.Domain.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -56,6 +57,27 @@ namespace ITEPortal.Domain.Services.Implementation
             };
 
             return token;
+        }
+
+        public async Task<TokenModel> RefreshTokenAsync(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenValidationParameters = new TokenValidationParameters 
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _options.Issuer,
+                ValidAudience = _options.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.JwtTokenSecretKey))
+            };
+
+            ClaimsPrincipal claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+            // TODO this method
+
+            return new TokenModel();
         }
     }
 }

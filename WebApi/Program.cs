@@ -25,10 +25,10 @@ public class Program
         {
             o.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidAudience = builder.Configuration["Jwt:Audience"],
+                ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                ValidAudience = builder.Configuration["JwtSettings:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
-                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                (Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:JwtTokenSecretKey"])),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,
