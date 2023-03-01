@@ -13,8 +13,7 @@ using WebApi.ViewModels.Login;
 
 namespace WebApi.Controllers
 {
-    [Authorize]
-    [Route("auth")]
+    [Authorize, Route("auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -22,14 +21,12 @@ namespace WebApi.Controllers
         private readonly IEmailManager _emailManager;
         private readonly IUserService _userService;
         private readonly IAuthCodeService _authCodeService;
-        private readonly IJwtService _jwtService;
         private readonly ITokenClaimsService _tokenClaimsService;
 
         public AuthController(
             IEmailManager emailManager,
             IUserService userService,
             IAuthCodeService authCodeService,
-            IJwtService jwtService,
             ITokenClaimsService tokenClaimsService,
             ILogger<AuthController> logger)
         {
@@ -37,14 +34,11 @@ namespace WebApi.Controllers
             _emailManager = emailManager;
             _userService = userService;
             _authCodeService = authCodeService;
-            _jwtService = jwtService;
             _tokenClaimsService = tokenClaimsService;
         }
 
         // POST auth/email
-        [AllowAnonymous]
-        [Route("email")]
-        [HttpPost]
+        [HttpPost, AllowAnonymous, Route("email")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -86,9 +80,7 @@ namespace WebApi.Controllers
         }
 
         // POST auth/token
-        [AllowAnonymous]
-        [Route("token")]
-        [HttpPost]
+        [HttpPost, AllowAnonymous, Route("token")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -126,8 +118,7 @@ namespace WebApi.Controllers
         }
 
         // POST auth/refresh-token
-        [Route("refresh-token")]
-        [HttpPost]
+        [HttpPost, Route("refresh-token")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -139,7 +130,7 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var refreshToken = await _tokenClaimsService.RefreshTokenAsync(token.Token);
+            var refreshToken = await _tokenClaimsService.ValidateTokenAsync(token.Token);
             if (refreshToken == null)
             {
                 return BadRequest(ModelState);
@@ -147,8 +138,8 @@ namespace WebApi.Controllers
 
             var result = new AuthenticateResultModel
             {
-                AccessToken = refreshToken.AccessToken,
-                ExpiresUTC = refreshToken.ExpiresUTC.Value,
+                //AccessToken = refreshToken.AccessToken,
+                //ExpiresUTC = refreshToken.ExpiresUTC.Value,
             };
             _logger.LogInformation($"Token has been refreshed.");
 

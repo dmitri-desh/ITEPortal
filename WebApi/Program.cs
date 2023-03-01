@@ -23,14 +23,16 @@ public class Program
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(o =>
         {
+            o.RequireHttpsMetadata = false;
+            o.SaveToken = true;
             o.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
                 ValidAudience = builder.Configuration["JwtSettings:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
                 (Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:JwtTokenSecretKey"])),
-                ValidateIssuer = true,
-                ValidateAudience = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
                 ValidateLifetime = false,
                 ValidateIssuerSigningKey = true
             };
@@ -84,12 +86,13 @@ public class Program
 
         app.UseCors("CorsPolicy");
 
+
+        app.UseRouting();
+
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapControllers();
-
-        app.MapGet("/auth/email", () => "Log in...").RequireAuthorization();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
 
         app.Run();
     }

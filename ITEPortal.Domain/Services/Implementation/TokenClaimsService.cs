@@ -59,7 +59,7 @@ namespace ITEPortal.Domain.Services.Implementation
             return token;
         }
 
-        public async Task<TokenModel> RefreshTokenAsync(string token)
+        public async Task<bool> ValidateTokenAsync(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenValidationParameters = new TokenValidationParameters 
@@ -75,9 +75,10 @@ namespace ITEPortal.Domain.Services.Implementation
 
             ClaimsPrincipal claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
+
             // TODO this method
 
-            return new TokenModel();
+            return true;
         }
     }
 }

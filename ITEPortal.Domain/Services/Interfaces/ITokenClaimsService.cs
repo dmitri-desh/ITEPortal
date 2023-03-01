@@ -5,6 +5,6 @@ namespace ITEPortal.Domain.Services.Interfaces
     public interface ITokenClaimsService
     {
         Task<TokenModel> GetTokenAsync(string username);
-        Task<TokenModel> RefreshTokenAsync(string token);
+        Task<bool> ValidateTokenAsync(string token);
     }
 }
