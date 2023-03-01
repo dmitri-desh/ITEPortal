@@ -130,17 +130,20 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var refreshToken = await _tokenClaimsService.ValidateTokenAsync(token.Token);
-            if (refreshToken == null)
+            var claimName = await _tokenClaimsService.ValidateTokenAsync(token.Token);
+
+            if (claimName == null)
             {
                 return BadRequest(ModelState);
             }
+            var newToken = await _tokenClaimsService.GetTokenAsync(claimName);
 
             var result = new AuthenticateResultModel
             {
-                //AccessToken = refreshToken.AccessToken,
-                //ExpiresUTC = refreshToken.ExpiresUTC.Value,
+                AccessToken = newToken.AccessToken,
+                ExpiresUTC = newToken.ExpiresUTC.Value,
             };
+
             _logger.LogInformation($"Token has been refreshed.");
 
             return Ok(result);

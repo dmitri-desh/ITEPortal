@@ -59,7 +59,7 @@ namespace ITEPortal.Domain.Services.Implementation
             return token;
         }
 
-        public async Task<bool> ValidateTokenAsync(string token)
+        public async Task<string> ValidateTokenAsync(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenValidationParameters = new TokenValidationParameters 
@@ -75,10 +75,9 @@ namespace ITEPortal.Domain.Services.Implementation
 
             ClaimsPrincipal claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
+            var claimName = claimsPrincipal.Claims.Where(x => x.Properties.Values.Contains("name")).Select(x => x.Value).FirstOrDefault();
 
-            // TODO this method
-
-            return true;
+            return claimName;
         }
     }
 }
