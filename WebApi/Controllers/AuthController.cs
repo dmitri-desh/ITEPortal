@@ -1,11 +1,14 @@
-﻿using ITEPortal.Domain;
-using ITEPortal.Domain.Dto;
-using ITEPortal.Domain.Models;
-using ITEPortal.Domain.Services.Implementation;
+﻿using ITEPortal.Data.Models;
+using ITEPortal.Domain.Models.Configuration;
 using ITEPortal.Domain.Services.Interfaces;
 using MessengerService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebApi.ViewModels.Auth;
 using WebApi.ViewModels.Login;
 
@@ -13,32 +16,35 @@ using WebApi.ViewModels.Login;
 
 namespace WebApi.Controllers
 {
-    [Authorize, Route("auth")]
+    [Authorize]
+    [Route("auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger<AuthOldController> _logger;
         private readonly IEmailManager _emailManager;
         private readonly IUserService _userService;
         private readonly IAuthCodeService _authCodeService;
-        private readonly ITokenClaimsService _tokenClaimsService;
+        private readonly JwtConfiguration _jwtConfig;
 
         public AuthController(
             IEmailManager emailManager,
             IUserService userService,
             IAuthCodeService authCodeService,
-            ITokenClaimsService tokenClaimsService,
-            ILogger<AuthController> logger)
+            ILogger<AuthOldController> logger,
+            IOptions<JwtConfiguration> jwtConfig)
         {
             _logger = logger;
             _emailManager = emailManager;
             _userService = userService;
             _authCodeService = authCodeService;
-            _tokenClaimsService = tokenClaimsService;
+            _jwtConfig = jwtConfig.Value;
         }
 
         // POST auth/email
-        [HttpPost, AllowAnonymous, Route("email")]
+        [AllowAnonymous]
+        [Route("email")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -54,11 +60,8 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var authCodeDto = new AuthCodeDto
-            {
-                UserId = user.Id
-            };
-            var authCode = await _authCodeService.AddAuthCodeAsync(authCodeDto);
+
+            var authCode = await _authCodeService.AddAuthCodeAsync(user.Id);
 
             var networkSettings = new NetworkSettings
             {
@@ -67,25 +70,24 @@ namespace WebApi.Controllers
             };
             var message = new EmailMessage
             {
-                Body = authCode?.CodeNumber,
+                Body = authCode.CodeNumber,
                 Subject = "Verification code",
                 FromEmail = "mail@testmail.com",
                 ToEmail = email.Email
             };
 
-            _emailManager.SendMessage(networkSettings, message);
+            await _emailManager.SendMessage(networkSettings, message);
             _logger.LogInformation($"Message from {message.FromEmail} to {message.ToEmail}. Subject is \"{message.Subject}\". Body is \"{message.Body}\"");
 
-            return Ok();
+            // TODO: code is sent to response temporarily and only for dev purposes!!
+            return Ok(authCode.CodeNumber);
         }
 
         // POST auth/token
-        [HttpPost, AllowAnonymous, Route("token")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetToken([FromBody] AuthCode code)
+        [AllowAnonymous]
+        [Route("token")]
+        [HttpPost]
+        public async Task<IActionResult> GetToken([FromBody] AuthCodeRequest code)
         {
             if (!ModelState.IsValid)
             {
@@ -93,7 +95,7 @@ namespace WebApi.Controllers
             }
 
             var user = await _userService.GetByEmailAsync(code.Email);
-            if (user == null) 
+            if (user == null)
             {
                 return BadRequest(ModelState);
             }
@@ -103,50 +105,65 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
-            var token = await _tokenClaimsService.GetTokenAsync(code.Email);
+            var jwtToken = GetToken(user);
 
-            var result = new AuthenticateResultModel
-            {
-                AccessToken = token.AccessToken,
-                ExpiresUTC = token.ExpiresUTC.Value,
-            };
-
-            _logger.LogInformation($"Code {code.Code} has been verified. Token has been granted for {code.Email}.");
-
-            return Ok(result);
+            return Ok(new { token = jwtToken });
         }
 
-        // POST auth/refresh-token
-        [HttpPost, Route("refresh-token")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshToken token)
+        [Route("refresh-token")]
+        [HttpGet]
+        public async Task<IActionResult> RefreshToken()
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
 
-            var claimName = await _tokenClaimsService.ValidateTokenAsync(token.Token);
-
-            if (claimName == null)
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
-            var newToken = await _tokenClaimsService.GetTokenAsync(claimName);
 
-            var result = new AuthenticateResultModel
+            var userEmail = identity.FindFirst("Email")?.Value;
+
+            var user = await _userService.GetByEmailAsync(userEmail);
+            if (user == null)
             {
-                AccessToken = newToken.AccessToken,
-                ExpiresUTC = newToken.ExpiresUTC.Value,
+                return BadRequest();
+            }
+
+            var jwtToken = GetToken(user);
+
+            return Ok(new { token = jwtToken });
+        }
+
+        private string GetToken(User user)
+        {
+            var issuer = _jwtConfig.Issuer;
+            var audience = _jwtConfig.Audience;
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.Key);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Email", user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(8),
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = new SigningCredentials
+                (new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha512Signature)
             };
 
-            _logger.LogInformation($"Token has been refreshed.");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
 
-            return Ok(result);
+            return jwtToken;
         }
     }
 }

@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerService", "Notific
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ITEPortal.Data", "ITEPortal.Data\ITEPortal.Data.csproj", "{E46E8C97-B65A-4A5D-A165-FA4463C0C786}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITEPortal.Domain", "ITEPortal.Domain\ITEPortal.Domain.csproj", "{A440C14A-A95A-4540-8E85-8AAE9A3D6C3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ITEPortal.Domain", "ITEPortal.Domain\ITEPortal.Domain.csproj", "{A440C14A-A95A-4540-8E85-8AAE9A3D6C3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{4131117E-8BB7-4E98-B4AA-79AF576E8EFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A440C14A-A95A-4540-8E85-8AAE9A3D6C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A440C14A-A95A-4540-8E85-8AAE9A3D6C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A440C14A-A95A-4540-8E85-8AAE9A3D6C3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4131117E-8BB7-4E98-B4AA-79AF576E8EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4131117E-8BB7-4E98-B4AA-79AF576E8EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4131117E-8BB7-4E98-B4AA-79AF576E8EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4131117E-8BB7-4E98-B4AA-79AF576E8EFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

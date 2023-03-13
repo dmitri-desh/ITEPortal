@@ -14,24 +14,20 @@ namespace ITEPortal.Domain.Services.Implementation
     {
         private readonly JwtSettings _options;
         private readonly IUserService _userService;
-        private readonly IUserRoleService _roleService;
-
-        public TokenClaimsService(IOptions<JwtSettings> options, IUserService userService, IUserRoleService roleService)
+       
+        public TokenClaimsService(IOptions<JwtSettings> options, IUserService userService)
         {
             _options = options.Value;
             _userService = userService;
-            _roleService = roleService;
-        }
+         }
 
         public async Task<TokenModel> GetTokenAsync(string username)
         {
             var user = await _userService.GetByEmailAsync(username);
-            var role = await _roleService.GetRoleByIdAsync(user.UserRoleId);
 
             var claims = new List<Claim> 
             { 
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role.Name) 
+                new Claim(ClaimTypes.Name, username) 
             };
 
             var secretKey = Encoding.ASCII.GetBytes(_options.JwtTokenSecretKey);

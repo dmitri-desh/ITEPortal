@@ -14,9 +14,22 @@
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="FluentValidation" Version="11.5.1" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.8.2.3" />
     <PackageReference Include="JWT" Version="10.0.2" />
+    <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
     <PackageReference Include="Nanoid" Version="2.1.0" />
+    <PackageReference Include="QuestPDF" Version="2022.12.2" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\PriceListFeatures\Commands\" />
+    <Folder Include="Application\PriceListFeatures\Queries\" />
+    <Folder Include="Application\ProductFeatures\Commands\" />
+    <Folder Include="Application\ProductFeatures\Queries\" />
+    <Folder Include="Application\StandFeatures\Commands\" />
+    <Folder Include="Application\StandFeatures\Queries\" />
   </ItemGroup>
 
 </Project>

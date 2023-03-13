@@ -1,42 +1,46 @@
 ﻿using AutoMapper;
 using ITEPortal.Data.Models;
-using ITEPortal.Data.Repositories.Implementation;
+using ITEPortal.Data.Persistence;
 using ITEPortal.Data.Repositories.Interfaces;
 using ITEPortal.Domain.Dto;
 using ITEPortal.Domain.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITEPortal.Domain.Services.Implementation
 {
     public class AuthCodeService : IAuthCodeService
     {
         private readonly IAuthCodeRepository _authCodeRepository;
+        private readonly ApplicationContext _context;
         private readonly IMapper _mapper;
 
-        public AuthCodeService(IAuthCodeRepository authCodeRepository, IMapper mapper)
+        public AuthCodeService(IAuthCodeRepository authCodeRepository, IMapper mapper, ApplicationContext context)
         {
             _authCodeRepository = authCodeRepository;
             _mapper = mapper;
+            _context = context;
         }
 
-        public async Task<AuthCode> AddAuthCodeAsync(AuthCodeDto authCodeDto)
+        public async Task<AuthCode> AddAuthCodeAsync(int userId)
         {
             try
             {
                 var generatedCode = await GenerateCodeAsync();
-                authCodeDto.CodeNumber = generatedCode;
-                authCodeDto.ExpiredDate = DateTime.UtcNow.AddHours(1);
+                var authCode = new AuthCode
+                {
+                    CodeNumber = generatedCode,
+                    ExpiredDate = DateTime.UtcNow.AddHours(2)
+                };
 
-                var authCode = await _authCodeRepository.InsertAsync(_mapper.Map<AuthCode>(authCodeDto));
+                var user = await _context.Set<User>().FindAsync(userId);
+                user?.AuthCodes.Add(authCode);
+
+                await _context.SaveChangesAsync();
+
                 return authCode;
             }
             catch (Exception e)
             {
-                return null; 
+                return null;
             }
         }
 
@@ -60,7 +64,7 @@ namespace ITEPortal.Domain.Services.Implementation
         public async Task<IEnumerable<AuthCode>> GetAllAsync()
         {
             var authCodes = await _authCodeRepository.GetAllAsync();
-            
+
             return authCodes.ToList();
         }
 
@@ -86,7 +90,7 @@ namespace ITEPortal.Domain.Services.Implementation
         public async Task<AuthCode> GetLastByUserIdAsync(long userId)
         {
             var authCodes = await GetAllAsync();
-            var authCode = authCodes.OrderByDescending(code => code.ExpiredDate).FirstOrDefault(x => x.User.Id == userId);
+            var authCode = authCodes.OrderByDescending(code => code.Id).FirstOrDefault(x => x.User.Id == userId);
 
             return authCode;
         }

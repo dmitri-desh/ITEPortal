@@ -9,7 +9,6 @@ namespace ITEPortal.Data
         public static void RegisterRepository(IServiceCollection services)
         {
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
-            services.AddScoped(typeof(IUserRoleRepository), typeof(UserRoleRepository));
             services.AddScoped(typeof(IAuthCodeRepository), typeof(AuthCodeRepository));
         }
     }

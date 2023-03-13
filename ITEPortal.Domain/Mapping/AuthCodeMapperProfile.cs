@@ -9,9 +9,9 @@ namespace ITEPortal.Domain.Mapping
         public AuthCodeMapperProfile()
         {
             CreateMap<AuthCode, AuthCodeDto>();
-            CreateMap<AuthCodeDto, AuthCode>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            //CreateMap<AuthCodeDto, AuthCode>()
+            //    .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            //    .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
         }
     }
 }
