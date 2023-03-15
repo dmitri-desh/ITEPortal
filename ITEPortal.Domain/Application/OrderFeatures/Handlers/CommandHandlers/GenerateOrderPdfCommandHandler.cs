@@ -2,8 +2,10 @@
 using ITEPortal.Data.Persistence;
 using ITEPortal.Domain.Application.OrderFeatures.Commands;
 using ITEPortal.Domain.Dto;
+using ITEPortal.Domain.Services.Implementation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 
 namespace ITEPortal.Domain.Application.OrderFeatures.Handlers.CommandHandlers
 {

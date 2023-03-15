@@ -1,6 +1,8 @@
 ﻿using ITEPortal.Data.Models;
 using ITEPortal.Data.Persistence;
+using ITEPortal.Domain.Application.ExhibitorFeatures.Queries;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ITEPortal.Domain.Application.ExhibitorFeatures.Handlers.QueryHandlers
 {

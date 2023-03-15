@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ITEPortal.Data.Models;
 using ITEPortal.Data.Persistence;
+using ITEPortal.Domain.Application.ExhibitionFeatures.Queries;
 using MediatR;
 
 namespace ITEPortal.Domain.Application.ExhibitionFeatures.Handlers.QueryHandlers

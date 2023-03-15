@@ -24,12 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\PriceListFeatures\Commands\" />
-    <Folder Include="Application\PriceListFeatures\Queries\" />
-    <Folder Include="Application\ProductFeatures\Commands\" />
-    <Folder Include="Application\ProductFeatures\Queries\" />
-    <Folder Include="Application\StandFeatures\Commands\" />
-    <Folder Include="Application\StandFeatures\Queries\" />
+    <Folder Include="Application\StandFeatures\Handlers\CommandHandlers\" />
+    <Folder Include="Application\StandFeatures\Handlers\QueryHandlers\" />
   </ItemGroup>
 
 </Project>

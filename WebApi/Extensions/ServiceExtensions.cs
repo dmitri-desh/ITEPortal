@@ -35,7 +35,6 @@ namespace WebApi.Extensions
         {
             services.AddScoped<IValidator<UserDto>, UserValidator>();
             services.AddScoped<IValidator<AuthCodeDto>, AuthCodeValidator>();
-            services.AddScoped<IValidator<UserRoleDto>, UserRoleValidator>();
         }
         public static void ConfigureJwtService(this IServiceCollection services)
         {

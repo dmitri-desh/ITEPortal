@@ -1,6 +1,6 @@
-﻿namespace WebApi.ViewModels.Login
+﻿namespace WebApi.ViewModels.Auth
 {
-    public class AuthCode
+    public class AuthCodeRequest
     {
         public string Email { get; set; }
         public string Code { get; set; }

@@ -10,7 +10,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApi.ViewModels.Auth;
-using WebApi.ViewModels.Login;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,7 +20,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ILogger<AuthOldController> _logger;
+        private readonly ILogger<AuthController> _logger;
         private readonly IEmailManager _emailManager;
         private readonly IUserService _userService;
         private readonly IAuthCodeService _authCodeService;
@@ -31,7 +30,7 @@ namespace WebApi.Controllers
             IEmailManager emailManager,
             IUserService userService,
             IAuthCodeService authCodeService,
-            ILogger<AuthOldController> logger,
+            ILogger<AuthController> logger,
             IOptions<JwtConfiguration> jwtConfig)
         {
             _logger = logger;
